@@ -13,6 +13,11 @@ class DB_mysqli
             die('Не удалось подключиться к базе данных: ' . mysqli_connect_error());
         }
         $this->connection = $connection;
+        if (!$this->connection->set_charset("utf8")) {
+            printf("Ошибка при загрузке набора символов utf8: %s\n", $this->connection->error);
+            die();
+        }
+
     } // func
 
     public function sql($sql)
