@@ -37,15 +37,6 @@ class DB_mysqli
         return $this->connection->insert_id;
     }
 
-    public function toGenerator()
-    {
-        if (mysqli_num_rows($this->result) > 0) {
-            while($row = mysqli_fetch_assoc($this->result)) {
-                yield $row;
-            }
-        }
-    }
-
     public function toArray()
     {
         $i=0;$ret = array();
@@ -64,6 +55,8 @@ class DB_mysqli
     {
         return mysqli_real_escape_string($this->connection, $string);
     } // func
+
+    /*=========================================================================================*/
 
 
     public function alreadyInDbOnUrl($url)
