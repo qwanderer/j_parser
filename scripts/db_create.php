@@ -56,6 +56,8 @@ CREATE TABLE p_content(
 `video_name` VARCHAR(255) NOT NULL ,
 `descr` TEXT NOT NULL ,
 `status` INT(2) NOT NULL DEFAULT 0,
+`sended_status` INT(2) NOT NULL DEFAULT 0,
+`attempts` INT(11) NOT NULL DEFAULT 0,
 `tel` VARCHAR(255) NOT NULL ,
 `user` VARCHAR(255) NOT NULL ,
 `google_coords` VARCHAR(255) NOT NULL ,

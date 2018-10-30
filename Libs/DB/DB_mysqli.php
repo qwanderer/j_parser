@@ -70,12 +70,11 @@ class DB_mysqli
     }
 
 
-    public function saveClearNode($clear_node, $keys)
+    public function saveClearNode($clear_node)
     {
         $insert_arr = [];
         foreach ($clear_node as $k=>$v){
-            $db_key = $keys[$k];
-            $insert_arr["`".$db_key."`"] = "'".$this->m_escape($v)."'";
+            $insert_arr["`".$k."`"] = "'".$this->m_escape($v)."'";
         } // foreach
         $sql = "INSERT INTO p_content(".implode(',',array_keys($insert_arr)).")VALUES(".implode(',',array_values($insert_arr)).")";
         $this->sql($sql);

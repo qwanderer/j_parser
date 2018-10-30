@@ -21,7 +21,7 @@ $smth_else_to_init = [
     ],
 ];
 
-//$smth_else_to_init = [];
+$smth_else_to_init = [];
 
 array_map(function($file_name){
     pclose(popen('start "'.$file_name.'" php start.php '.$file_name, 'r'));

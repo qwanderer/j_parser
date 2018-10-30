@@ -14,7 +14,7 @@ abstract class Parser
     protected $total_finds = [
         'url',
         'title',
-        'description',
+        'descr',
         'category',
         'tag',
         'model',
