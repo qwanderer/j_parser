@@ -78,6 +78,7 @@ abstract class Parser
             if(Config::get('debug')==1){echo " - FALSE"; }
             throw new Exception(get_class($this).' '.$this->page_current.' valid fail');
         }
+        echo " V";
     } // func
 
 
@@ -104,9 +105,11 @@ abstract class Parser
     {
         if(Config::get('debug')==1){ d('extractOuterData'); }
 
+        $outer_nodes = $this->getOuterFindsGenerator();
+        if(count($outer_nodes)<1){d(" NO OUTER NODES ");}
 
         $loop=0;
-        foreach($this->parsed_data->find($this->outer_shdp_string) as $outer_node)
+        foreach($outer_nodes as $outer_node)
         {
             $loop++;
             d("page={$this->page_current}|loop=$loop");
@@ -167,13 +170,19 @@ abstract class Parser
         return array_diff($this->total_finds, $this->outer_finds);
     }
 
+    protected function getOuterFindsGenerator()
+    {
+        return $this->parsed_data->find($this->outer_shdp_string);
+    }
 
 
     protected function extract_url($node){ return ""; }
     protected function extract_title($node){ return ""; }
     protected function extract_descr($node){ return ""; }
     protected function extract_category($node){ return ""; }
+    protected function extract_tag($node){ return ""; }
     protected function extract_metro($node){ return ""; }
+    protected function extract_model($node){ return ""; }
     protected function extract_tel($node){ return ""; }
     protected function extract_user($node){ return ""; }
     protected function extract_google_coords($node){ return ""; }
