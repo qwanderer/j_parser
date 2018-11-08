@@ -26,6 +26,12 @@ abstract class Parser
         'img_links',
     ];
 
+    protected $scrapper_settings = [
+        'use_proxy'=>0,
+        'force'=>0,
+        'attempts'=>5
+    ];
+
     protected $parsed_data;
 
     protected $outer_shdp_string;
@@ -75,7 +81,7 @@ abstract class Parser
         Config::get('debug')==1 and log::d('try to find '.get_class($this));
 
         if(strpos($this->parsed_data, strtolower(get_class($this)))===false){
-            if(Config::get('debug')==1){echo " - FALSE"; }
+            if(Config::get('debug')==1){echo " VF"; }
             throw new Exception(get_class($this).' '.$this->page_current.' valid fail');
         }
         echo " V";
@@ -94,7 +100,7 @@ abstract class Parser
         if(Config::get('debug')==1){ d('parseLink: '.$p_link); }
 
         $this->stat->curls++;
-        $this->parsed_data = Scrapper::get($p_link);
+        $this->parsed_data = Scrapper::get($p_link, $this->scrapper_settings);
         $this->_sleep('after_parseLink');
         return $this;
     } // func
@@ -103,7 +109,7 @@ abstract class Parser
 
     protected function extractOuterData()
     {
-        if(Config::get('debug')==1){ d('extractOuterData'); }
+        if(Config::get('debug')==1){ log::d('extractOuterData'); }
 
         $outer_nodes = $this->getOuterFindsGenerator();
         if(count($outer_nodes)<1){d(" NO OUTER NODES ");}
@@ -112,8 +118,8 @@ abstract class Parser
         foreach($outer_nodes as $outer_node)
         {
             $loop++;
-            d("page={$this->page_current}|loop=$loop");
-            if($this->db->alreadyInDbOnUrl($this->extract_url($outer_node))){ echo "|skipped"; continue; }
+            log::d("page={$this->page_current}|loop=$loop");
+            if($this->alreadyInDb($outer_node)){ echo "|skipped"; continue; }
 
             $clear_node = $this->getNewClearNode();
             foreach($this->getOuterFinds() as $find)
@@ -127,10 +133,16 @@ abstract class Parser
     } // func
 
 
+    protected function alreadyInDb($outer_node)
+    {
+        return $this->db->alreadyInDbOnUrl($this->extract_url($outer_node));
+    }
+
+
 
     protected function extractInnerData($clear_node)
     {
-        if(Config::get('debug')==1){ d('extractInnerData'); }
+        if(Config::get('debug')==1){ log::d('extractInnerData'); }
 
         try{
             $this->parseLink($clear_node['url'])->validateParsedData('inner');

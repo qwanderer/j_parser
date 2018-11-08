@@ -68,6 +68,15 @@ class DB_mysqli
     }
 
 
+    public function alreadyInDbOnTitle($title)
+    {
+        if(Config::get('debug')==1){ d('alreadyInDbOnTitle: '.$title); }
+        $sql = "SELECT id FROM p_content WHERE title='".$this->m_escape($title)."'";
+        $data = $this->sql($sql)->toArray();
+        return ($data and isset($data[0]) and isset($data[0]['id']));
+    }
+
+
     public function saveClearNode($clear_node)
     {
         $insert_arr = [];

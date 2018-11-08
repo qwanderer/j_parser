@@ -3,29 +3,17 @@
 class Scrapper
 {
 
-    private static $use_proxy = 0;
-    private static $force = 0;
 
-    public static function use_proxy()
-    {
-        self::$use_proxy = 1;
-    }
 
-    public static function force()
+    public static function get($url, $settings)
     {
-        self::$force = 1;
-    }
 
-    public static function get($url)
-    {
-        $attempts = self::$force == 1
-            ? Config::get('curl')['force_attempts']
-            : 1;
+        $attempts = self::getAttempts($settings);
 
         for($i=0; $i<=$attempts; $i++)
         {
             try{
-                $curl_result = Curl::get($url, self::getUserAgent(), self::getProxy());
+                $curl_result = Curl::get($url, self::getUserAgent(), self::getProxy($settings));
                 break;
             }catch (Exception $e){
                 log::d($e->getMessage());
@@ -38,9 +26,34 @@ class Scrapper
                 continue;
             }
         } // for
-        // log::flog($curl_result);
-        return str_get_html($curl_result);
+        return (empty($curl_result))? false : str_get_html($curl_result);
     } // func
+
+
+    public static function getAttempts($settings)
+    {
+        return (isset($settings['attempts']) && $settings['attempts']>0) ? $settings['attempts'] : 1;
+    }
+
+
+    public static function getProxy($settings)
+    {
+        if(!isset($settings['use_proxy']) || $settings['use_proxy']==false){ return null; }
+
+        $proxy_list_file_path = Config::get('curl')['proxy_list_path'];
+        if(!file_exists($proxy_list_file_path)){ return null; }
+
+        $proxy_list = file($proxy_list_file_path);
+        $proxy_list = array_map(function($row){
+                return str_replace(["\r","\n"," "], "", $row);
+            }, $proxy_list);
+
+        $proxy = $proxy_list[rand(0, count($proxy_list)-1)];
+        $proxy = str_replace("\t", ":", $proxy);
+        if(Config::get('debug')==1) { log::d($proxy); }
+        return $proxy;
+    }
+
 
     public static function getUserAgent()
     {

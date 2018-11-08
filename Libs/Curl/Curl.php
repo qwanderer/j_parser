@@ -3,6 +3,8 @@
 class Curl
 {
 
+
+
     public static function get($url, $user_agent=null, $proxy=null)
     {
         $url_host = str_replace("www.", '', parse_url($url)['host']);
@@ -43,25 +45,20 @@ class Curl
         }
         else
         {
-            if(Config::get('debug')==1){ file_put_contents('./txt/temp/'.time().'.txt', print_r($result,1)); }
+            if(Config::get('debug')==1 && Config::get('save_parsed_data_to_file')['status']==1){ file_put_contents('./txt/temp/'.time().'.txt', print_r($result,1)); }
             return $result;
         }
     } // func
 
+
+
     public static function send_to_api($url, $data)
     {
         $ch = curl_init($url);
-        $data_string = json_encode($data);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($data_string))
-        );
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $result = curl_exec($ch);
         $curl_errno = curl_errno($ch);
@@ -72,10 +69,12 @@ class Curl
         }
         else
         {
-            if(Config::get('save_parsed_data_to_file')['status']==1){ file_put_contents(Config::get('save_parsed_data_to_file')['folder'].'./'.time().'.txt', print_r($result,1)); }
+            if(Config::get('debug')==1 && Config::get('save_parsed_data_to_file')['status']==1){ file_put_contents(Config::get('save_parsed_data_to_file')['folder'].'./'.time().'.txt', print_r($result,1), FILE_APPEND); }
             return json_decode($result,1);
         }
     } // func
+
+
 
     private static function getCurlErrNoExplain($num)
     {
