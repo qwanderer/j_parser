@@ -5,7 +5,7 @@ $config['base_dir'] = __DIR__;
 $config['parsers_dir'] = $config['base_dir'].'/projects';
 
 
-$config['debug'] = 0;
+$config['debug'] = 1;
 $config['save_parsed_data_to_file'] = [
     'status'=>1,
     'folder' => $config['base_dir'].'/txt/temp/'

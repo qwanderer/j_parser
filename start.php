@@ -21,6 +21,18 @@ Config::getInstance(include_once './config.php');
 $db_class_name = "DB_".Config::get('db')['drive'];
 include_once "./Libs/DB/{$db_class_name}.php";
 
+
+$required_folders = [
+    './txt/logs/',
+    './txt/temp/'
+];
+
+foreach($required_folders as $folder)
+{
+    if(!is_dir($folder)) mkdir($folder, 0777, true);
+} // foreach
+
+
 $file_name = str_replace('.php', '', $argv[1]);
 include_once $config['parsers_dir']."/{$file_name}.php";
 

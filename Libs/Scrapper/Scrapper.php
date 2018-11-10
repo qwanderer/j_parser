@@ -3,6 +3,7 @@
 class Scrapper
 {
 
+    public static $proxy;
 
 
     public static function get($url, $settings)
@@ -36,9 +37,11 @@ class Scrapper
     }
 
 
-    public static function getProxy($settings)
+    public static function getProxy($settings, $change_flag=0)
     {
         if(!isset($settings['use_proxy']) || $settings['use_proxy']==false){ return null; }
+
+        if(self::$proxy != "" && $change_flag == 0) return self::$proxy;
 
         $proxy_list_file_path = Config::get('curl')['proxy_list_path'];
         if(!file_exists($proxy_list_file_path)){ return null; }
@@ -51,7 +54,8 @@ class Scrapper
         $proxy = $proxy_list[rand(0, count($proxy_list)-1)];
         $proxy = str_replace("\t", ":", $proxy);
         if(Config::get('debug')==1) { log::d($proxy); }
-        return $proxy;
+        self::$proxy=$proxy;
+        return self::$proxy;
     }
 
 
@@ -61,9 +65,5 @@ class Scrapper
         return $user_agents[rand(0, count($user_agents)-1)];
     }
 
-    public static function getProxy()
-    {
-        return null;
-    }
 
 } // class
